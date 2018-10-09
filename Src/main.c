@@ -73,6 +73,7 @@ static void MX_TIM10_Init(void);
 /* Private function prototypes -----------------------------------------------*/
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 void HD44780_Print(uint8_t *message);
+void send();
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -111,6 +112,7 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   MX_TIM10_Init();
+
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim10);
   HAL_UART_Receive_DMA(&huart3, &Received, 250);
@@ -118,10 +120,12 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  LCD1602_Begin8BIT(RS_GPIO_Port,RS_Pin,E_Pin,D0_GPIO_Port,D0_Pin,D1_Pin,D2_Pin,D3_Pin,D4_GPIO_Port,D4_Pin,D5_Pin,D6_Pin,D7_Pin);
   while (1)
   {
 
   /* USER CODE END WHILE */
+	  send();
 
   /* USER CODE BEGIN 3 */
 
@@ -325,11 +329,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		 i++;
 	 }
 
+
 	 HAL_UART_Transmit_DMA(&huart3, AllData, 300);
 
 	 if((!HAL_GPIO_ReadPin(GPIOA, Button_0_Pin))){
-		// LCD1602_Begin8BIT(RS_GPIO_Port,RS_Pin,E_Pin,D0_GPIO_Port,D0_Pin,D1_Pin,D2_Pin,D3_Pin,D4_GPIO_Port,D4_Pin,D5_Pin,D6_Pin,D7_Pin);
-		// LCD1602_print(Data1);
+		//LCD1602_Begin8BIT(RS_GPIO_Port,RS_Pin,E_Pin,D0_GPIO_Port,D0_Pin,D1_Pin,D2_Pin,D3_Pin,D4_GPIO_Port,D4_Pin,D5_Pin,D6_Pin,D7_Pin);
+		//LCD1602_print(Data1);
 	 }
 	 else if((!HAL_GPIO_ReadPin(GPIOA, Button_1_Pin))){
 		// LCD1602_Begin8BIT(RS_GPIO_Port,RS_Pin,E_Pin,D0_GPIO_Port,D0_Pin,D1_Pin,D2_Pin,D3_Pin,D4_GPIO_Port,D4_Pin,D5_Pin,D6_Pin,D7_Pin);
@@ -339,6 +344,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		// LCD1602_Begin8BIT(RS_GPIO_Port,RS_Pin,E_Pin,D0_GPIO_Port,D0_Pin,D1_Pin,D2_Pin,D3_Pin,D4_GPIO_Port,D4_Pin,D5_Pin,D6_Pin,D7_Pin);
 		// LCD1602_PrintFloat(fPrice*PLN);
 	 }
+}
+void send(){
+	static uint8_t data[15];
+
+	if((!HAL_GPIO_ReadPin(GPIOA, Button_0_Pin))){
+		sprintf(data, "Przycisk 0\n\r");
+		HAL_UART_Transmit_DMA(&huart3, data, 15);
+		HAL_Delay(500);
+	}
+	else if((!HAL_GPIO_ReadPin(GPIOA, Button_1_Pin))){
+		sprintf(data, "Przycisk 1\n\r");
+		HAL_UART_Transmit_DMA(&huart3, data, 15);
+		HAL_Delay(500);
+	}
+	else if((!HAL_GPIO_ReadPin(GPIOA, Button_2_Pin))){
+		sprintf(data, "Przycisk 2\n\r");
+		HAL_UART_Transmit_DMA(&huart3, data, 15);
+		HAL_Delay(500);
+	}
 }
 
 /* USER CODE END 4 */
